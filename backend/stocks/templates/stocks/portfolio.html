@@ -5,14 +5,10 @@
 <title>PORTFOLIO</title>
 
 <script>
-    // Your polling logic here
-    // ~20-30 lines total
+
 </script>
 
 <body>
-
-
-
 
 <style>
     table,
@@ -25,11 +21,17 @@
         margin: auto;
         font-family: Arial;
     }
-    }
 
     h1 {
-        font-family: Arial;
         justify-content: center;
+    }
+
+    #maintitle{
+        font-family: arial;
+    }
+
+    #resetbutton{
+        background-color: grey;
     }
 
     .container {
@@ -38,32 +40,55 @@
 
     .search-selection {
         flex: 1;
-        background-color: azure;
+        padding: 10px;
+        background-color: grey;
     }
 
     .portfolio-section {
+        padding: 10px;
         flex: 2;
-        background-color: azure;
+        background-color: lightslategray;
     }
+
+    .portfolio-variables{
+        background-color: navy;
+        color:white;
+        font-weight: bold;
+    }
+
+    .portfolio-values{
+        background-color: white;
+    }
+
+    .search-results{
+        padding: 10px;
+        margin-top: 10px;
+        background-color: yellow;
+        font-family:Arial;
+    }
+
+
 </style>
 
-<h1>TRACKED PORTFOLIO</h1>
+<h1 id="maintitle"><center>STOCK TRACK PORTFOLIO</center></h1>
 
 <div class="container">
 
     <div class="search-selection">
-        <h2>SEARCH STOCKS</h2>
+        <h2><center>SEARCH STOCKS</center></h2>
 
         <form method="POST">
+            <center>
             {% csrf_token %}
             <input type="text" name="ticker" placeholder="Enter Ticker Here">
             <button type="submit" name="search">Search</button>
+            </center>
         </form>
 
         {% if search_results %}
             <div class="search-results">
                 <h3>{{ search_results.ticker }} | {{ search_results.company_name }}</h3>
-                <p>Current Price: {{ search_results.current_price }}</p>
+                <p>Current Price: ${{ search_results.current_price }}</p>
                 
                 <form method="POST">
 
@@ -92,13 +117,13 @@
     <div class="portfolio-section">
         <table>
             <tr>
-                <td>Ticker</td>
-                <td>Company</td>
-                <td>Current</td>
-                <td>Upper</td>
-                <td>Lower</td>
-                <td>Alert</td>
-                <td>
+                <td class="portfolio-variables">Ticker</td>
+                <td class="portfolio-variables">Company</td>
+                <td class="portfolio-variables">Current</td>
+                <td class="portfolio-variables">Upper</td>
+                <td class="portfolio-variables">Lower</td>
+                <td class="portfolio-variables">Alert</td>
+                <td id="resetbutton">
                     <form method="POST">
                         {% csrf_token %}
                             <input type="hidden" name="resetAlerts">
@@ -107,12 +132,12 @@
                 </td>
             </tr>
             {% for item in stock_data %}
-            <tr>
+            <tr class="portfolio-values">
                 <td>{{ item.ticker }}</td>
                 <td>{{ item.company_name }}</td>
-                <td>{{ item.current_price }}</td>
-                <td>{{ item.upperLimit }}</td>
-                <td>{{ item.lowerLimit }}</td>
+                <td>${{ item.current_price }}</td>
+                <td>${{ item.upperLimit }}</td>
+                <td>${{ item.lowerLimit }}</td>
                 <td>
                     {% if item.alertEnabled %}
                     ON
@@ -136,7 +161,6 @@
 </div>
 
 <script>
-    // Refresh page every 60 seconds
     setInterval(() => location.reload(), 60000);
 </script>
 

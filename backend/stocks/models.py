@@ -17,13 +17,16 @@ class TrackedStock(models.Model):
     upperAlertTriggered = models.BooleanField(default = False)
     lowerAlertTriggered = models.BooleanField(default = False)
 
+    marketClosed = models.BooleanField(default = False)
+    latestPrice = models.DecimalField(max_digits = 10, decimal_places=2, default=0.00)
+
     last_alert_type = models.CharField(max_length=20, null=True, blank=True)  
 
     alertTriggerTime = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.ticker} - {self.company_name}"
-    
+
     def _get_alpaca_api(self):
         return tradeapi.REST(
             key_id=settings.ALPACA_API_KEY,
