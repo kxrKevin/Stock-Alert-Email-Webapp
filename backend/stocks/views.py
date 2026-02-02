@@ -64,16 +64,22 @@ def portfolio_view(request):
 
         current_price = 0
 
+        print(stock.marketClosed)
+
         # Condition if Markets are CLosed but the app is retrieving stock price data for the first time
         if (16 < datetime.now().time().hour or datetime.now().time().hour < 9) and stock.marketClosed == False:
             current_price = stock.get_current_price()
             print("CACHING STOCK PRICE...")
             stock.latestPrice = current_price
             stock.marketClosed = True
+            stock.save()
+            print(stock.marketClosed)
+
         # Condition if Markets are Closed and stock prices are already saved
         elif (16 < datetime.now().time().hour or datetime.now().time().hour < 9) and stock.marketClosed == True:
             print("FETCHING CACHED STOCK DATA")
             current_price = stock.latestPrice
+
         # Operating as usual
         else:
             current_price = stock.get_current_price()
