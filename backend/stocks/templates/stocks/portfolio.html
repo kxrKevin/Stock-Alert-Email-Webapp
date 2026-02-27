@@ -67,6 +67,10 @@
         font-family:Arial;
     }
 
+    .price-higher {background-color: green;}
+    .price-lower {background-color: red;}
+    .price-neutral {background-color: white;}
+
 
 </style>
 
@@ -135,7 +139,9 @@
             <tr class="portfolio-values">
                 <td>{{ item.ticker }}</td>
                 <td>{{ item.company_name }}</td>
-                <td>${{ item.current_price }}</td>
+                <td class="{% if item.current_price > item.upperLimit %}price-higher{% elif item.current_price < item.lowerLimit %}price-lower{% else %}price-neutral{% endif %}">
+                    ${{ item.current_price }}
+                </td>
                 <td>${{ item.upperLimit }}</td>
                 <td>${{ item.lowerLimit }}</td>
                 <td>
@@ -146,13 +152,21 @@
                     {% endif %}
                 </td>
                 <td>
+                    <form method="POST" action="{% url 'statistics' item.ticker %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="stock_id" value="{{ item.stock.id }}">
+                        <button type="submit" name="statistics">STATS</button>
+                    </form>
+
+                </td>
+                <td>
+
                     <form method="POST">
                         {% csrf_token %}
-
                         <input type="hidden" name="stock_id" value="{{ item.stock.id }}">
                         <button type="submit" name="delete">DELETE</button>
                     </form>
-
+                    
                 </td>
             </tr>
             {% endfor %}

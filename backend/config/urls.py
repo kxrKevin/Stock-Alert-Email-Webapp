@@ -16,9 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from stocks.views import portfolio_view
+from stocks.views import portfolio_view, statistics_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('portfolio/', portfolio_view, name='portfolio')
+    path('portfolio/', portfolio_view, name='portfolio'),
+    path('statistics/<str:ticker>/', statistics_view, name='statistics')
 ]

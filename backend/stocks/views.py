@@ -1,10 +1,12 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import TrackedStock
-from .services import search_stock
+from .services import search_stock, get_beta
 from datetime import datetime
 
 from django.core.mail import send_mail
 from django.conf import settings
+
+import yfinance as yf
 
 def portfolio_view(request):
     stockList = TrackedStock.objects.all()
@@ -49,11 +51,20 @@ def portfolio_view(request):
 
             return redirect('portfolio')
 
+        elif 'statistics' in request.POST:
+            stock_id = request.POST.get('stock_id')
+            stocks = get_object_or_404(TrackedStock, id=stock_id)
+            stock_ticker = stocks.ticker
+            print(stock_ticker + "IS IN STATISTICS")
+            request.session['ticker'] = stock_ticker
+            return redirect('statistics')
+
         elif 'delete' in request.POST:
             stock_id = request.POST.get('stock_id')
             stocks = get_object_or_404(TrackedStock, id=stock_id)
             stocks.delete()
             return redirect('portfolio')
+
 
         elif 'reset_alerts' in request.POST:
             for rstock in stockList:
@@ -64,8 +75,6 @@ def portfolio_view(request):
 
         current_price = 0
 
-        print(stock.marketClosed)
-
         # Condition if Markets are CLosed but the app is retrieving stock price data for the first time
         if (16 < datetime.now().time().hour or datetime.now().time().hour < 9) and stock.marketClosed == False:
             current_price = stock.get_current_price()
@@ -73,7 +82,6 @@ def portfolio_view(request):
             stock.latestPrice = current_price
             stock.marketClosed = True
             stock.save()
-            print(stock.marketClosed)
 
         # Condition if Markets are Closed and stock prices are already saved
         elif (16 < datetime.now().time().hour or datetime.now().time().hour < 9) and stock.marketClosed == True:
@@ -84,6 +92,7 @@ def portfolio_view(request):
         else:
             current_price = stock.get_current_price()
             stock.marketClosed = False
+            stock.save()
 
         stock_data.append({
             'stock': stock,
@@ -121,8 +130,37 @@ def portfolio_view(request):
 
     return render(request, 'stocks/portfolio.html', {
         'stock_data':stock_data,
-        'search_results': search_results
+        'search_results': search_results,
     })
 
+def statistics_view(request, ticker):
+    ticker = ticker
+    curr_price = 0
+    stockList = TrackedStock.objects.all()
+    for stock in stockList:
+        if stock.ticker == ticker:
+            curr_price = stock.get_current_price()
+    beta = get_beta(ticker)
+    volatility = 0
+
+    if request.method == 'POST':
+        if 'stock_id' in request.POST:
+            print("TRUE")
+            print(request.POST.get('stock_id'))
+        else:
+            print("FALSE")
+        stock_id = request.POST.get('stock_id')
+        if stock_id:
+            secondstock = get_object_or_404(TrackedStock, id=stock_id)
+            print(secondstock.get_current_price())
+            volatility = secondstock.get_current_price()
+
+    return render(request, 'stocks/statistics.html', {
+        'ticker': ticker,
+        'current_price': curr_price,
+        'stock_data': stockList,
+        'beta_value': beta,
+        'volatility': volatility,
+    })
 
 

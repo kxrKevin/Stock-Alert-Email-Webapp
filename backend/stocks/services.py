@@ -1,7 +1,8 @@
 import alpaca_trade_api as tradeapi
 from django.conf import settings
 from django.utils import timezone
-from .models import TrackedStock
+import yfinance as yf
+import pandas as pd
 
 def search_stock(ticker):
     try:
@@ -22,3 +23,30 @@ def search_stock(ticker):
     except Exception as e:
         print(f"Error fetching stock data: {e}")
         return None
+    
+def get_beta(ticker):
+    
+    data = yf.download(ticker, period="3mo")[['Close']]
+    spy = yf.download('^GSPC', period="3mo")[['Close']]
+
+    data = data.rename(columns={'Close': 'stock_close'})
+    spy = spy.rename(columns={'Close': 'spy_close'})
+
+    merged = pd.merge(data, spy, left_index=True, right_index=True)
+
+    merged['stock_ret'] = merged['stock_close'].pct_change()
+    merged['spy_ret'] = merged['spy_close'].pct_change()
+
+    covariance = merged[['stock_ret', 'spy_ret']].cov().iloc[0,1]
+    variance = merged['spy_ret'].var()
+
+    beta = covariance / variance
+
+    print(data)
+    print(spy)
+    print(merged)
+    return beta
+
+get_beta("NVDA")
+
+

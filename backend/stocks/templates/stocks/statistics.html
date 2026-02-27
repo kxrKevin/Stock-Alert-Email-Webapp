@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+
+<html>
+
+<a href="{%url 'portfolio' %}">RETURN TO PORTFOLIO</a>    
+<title>{{ ticker }}</title>
+
+<div>
+    <center>
+
+    <h1>{{ ticker }}</h1>
+    <table>
+        <tr>
+            <td>CURRENT PRICE</td>
+            <td>
+                {{ current_price}}
+            </td>
+        </tr>
+        <tr>
+            <td>BETA VALUE (S&P500)</td>
+            <td>{{ beta_value }}</td>
+        </tr>
+        <tr>
+            <td>
+
+            </td>
+            <td>
+                {{ volatility }}
+            </td>
+        </tr>
+
+    </table>
+
+
+
+
+    </center>
+</div>
+
+
+</html>
