@@ -8,11 +8,13 @@
 <style>
 
 table {
-    border-collapse: collapse;
+    border-collapse: solid;
+    border: 1px solid black; 
 }
 
-td, th {
+td, th, tr {
     padding: 3px 20px;
+    border: 1px solid black; 
 }
 
 </style>
@@ -29,12 +31,12 @@ td, th {
             </td>
         </tr>
         <tr>
-            <td>BETA VALUE (S&P500) </td>
+            <td>MARKET BETA(S&P500) </td>
             <td>{{ beta_value }}</td>
         </tr>
         <tr>
             <td>
-                <p>STOCK-STOCK BETAS</p>
+                <p>STOCK-STOCK BETA</p>
                 <form method="POST">
                     {% csrf_token %}
                     <select name="stock_id" onchange="this.form.submit()">
@@ -50,6 +52,14 @@ td, th {
                 {{ stock_to_stock }} ({{ second_comp }})
             </td>
         </tr>
+        <tr>
+            <td>
+                DAILY VOLATILITY
+            </td>
+            <td>
+                {{ volatility }}
+            </td>
+        </tr>
 
     </table>
 
@@ -58,6 +68,8 @@ td, th {
 
     </center>
 </div>
-
+<div>
+    <center><p>STATISTICS ARE BASED ON STOCK DATA OF THE PAST 3 MONTHS</p></center>
+</div>
 
 </html>

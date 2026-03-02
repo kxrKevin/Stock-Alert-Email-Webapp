@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import TrackedStock
-from .services import search_stock, get_betas
+from .services import search_stock, get_betas, get_volatility
 from datetime import datetime
 
 from django.core.mail import send_mail
@@ -157,6 +157,8 @@ def statistics_view(request, ticker):
             stock_to_stock = get_betas(ticker, secondstock.ticker)
             stock_to_stock = f"{stock_to_stock:.4f}"
 
+    volatility = get_volatility(ticker)
+
     return render(request, 'stocks/statistics.html', {
         'ticker': ticker,
         'current_price': curr_price,
@@ -164,6 +166,7 @@ def statistics_view(request, ticker):
         'beta_value': beta,
         'stock_to_stock': stock_to_stock,
         'second_comp': secondstock.company_name,
+        'volatility': volatility,
     })
 
 

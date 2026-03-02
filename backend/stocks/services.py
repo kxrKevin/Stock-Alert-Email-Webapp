@@ -48,5 +48,14 @@ def get_betas(ticker1, ticker2):
     return beta
 
 
+def get_volatility(ticker):
 
+    data = yf.download(ticker, period="3mo")[['Close']]
+    data['Returns'] = data['Close'].pct_change() * 100
+
+    print(data)
+
+    volatility = data['Returns'].std()
+
+    return f"{volatility:.4f}"
 
