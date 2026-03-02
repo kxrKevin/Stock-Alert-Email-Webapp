@@ -5,11 +5,23 @@
 <a href="{%url 'portfolio' %}">RETURN TO PORTFOLIO</a>    
 <title>{{ ticker }}</title>
 
-<div>
+<style>
+
+table {
+    border-collapse: collapse;
+}
+
+td, th {
+    padding: 3px 20px;
+}
+
+</style>
+
+<div >
     <center>
 
     <h1>{{ ticker }}</h1>
-    <table>
+    <table class="statistics">
         <tr>
             <td>CURRENT PRICE</td>
             <td>
@@ -17,15 +29,25 @@
             </td>
         </tr>
         <tr>
-            <td>BETA VALUE (S&P500)</td>
+            <td>BETA VALUE (S&P500) </td>
             <td>{{ beta_value }}</td>
         </tr>
         <tr>
             <td>
+                <p>STOCK-STOCK BETAS</p>
+                <form method="POST">
+                    {% csrf_token %}
+                    <select name="stock_id" onchange="this.form.submit()">
+                        <option disabled selected>Select a stock</option>
+                        {% for item in stock_data %}
+                            <option value="{{ item.id }}">{{ item.ticker }}</option>
+                        {% endfor %}
+                    </select>
+                </form>
 
             </td>
             <td>
-                {{ volatility }}
+                {{ stock_to_stock }} ({{ second_comp }})
             </td>
         </tr>
 

@@ -24,10 +24,10 @@ def search_stock(ticker):
         print(f"Error fetching stock data: {e}")
         return None
     
-def get_beta(ticker):
+def get_betas(ticker1, ticker2):
     
-    data = yf.download(ticker, period="3mo")[['Close']]
-    spy = yf.download('^GSPC', period="3mo")[['Close']]
+    data = yf.download(ticker1, period="3mo")[['Close']]
+    spy = yf.download(ticker2, period="3mo")[['Close']]
 
     data = data.rename(columns={'Close': 'stock_close'})
     spy = spy.rename(columns={'Close': 'spy_close'})
@@ -47,6 +47,6 @@ def get_beta(ticker):
     print(merged)
     return beta
 
-get_beta("NVDA")
+
 
 

@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import TrackedStock
-from .services import search_stock, get_beta
+from .services import search_stock, get_betas
 from datetime import datetime
 
 from django.core.mail import send_mail
@@ -140,27 +140,30 @@ def statistics_view(request, ticker):
     for stock in stockList:
         if stock.ticker == ticker:
             curr_price = stock.get_current_price()
-    beta = get_beta(ticker)
-    volatility = 0
+    beta = get_betas(ticker, '^GSPC')
+    beta = f"{beta:.4f}"
+
+    stock_to_stock = 0
 
     if request.method == 'POST':
-        if 'stock_id' in request.POST:
+        if 'stock_to_stock' in request.POST:
             print("TRUE")
-            print(request.POST.get('stock_id'))
         else:
             print("FALSE")
         stock_id = request.POST.get('stock_id')
         if stock_id:
             secondstock = get_object_or_404(TrackedStock, id=stock_id)
-            print(secondstock.get_current_price())
-            volatility = secondstock.get_current_price()
+            print(secondstock.ticker)
+            stock_to_stock = get_betas(ticker, secondstock.ticker)
+            stock_to_stock = f"{stock_to_stock:.4f}"
 
     return render(request, 'stocks/statistics.html', {
         'ticker': ticker,
         'current_price': curr_price,
         'stock_data': stockList,
         'beta_value': beta,
-        'volatility': volatility,
+        'stock_to_stock': stock_to_stock,
+        'second_comp': secondstock.company_name,
     })
 
 
