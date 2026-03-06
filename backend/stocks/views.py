@@ -57,14 +57,13 @@ def portfolio_view(request):
             stock_ticker = stocks.ticker
             print(stock_ticker + "IS IN STATISTICS")
             request.session['ticker'] = stock_ticker
-            return redirect('statistics')
+            return redirect('statistics', ticker=stock_ticker)
 
         elif 'delete' in request.POST:
             stock_id = request.POST.get('stock_id')
             stocks = get_object_or_404(TrackedStock, id=stock_id)
             stocks.delete()
             return redirect('portfolio')
-
 
         elif 'reset_alerts' in request.POST:
             for rstock in stockList:
@@ -144,6 +143,7 @@ def statistics_view(request, ticker):
     beta = f"{beta:.4f}"
 
     stock_to_stock = 0
+    second_company_name = ""
 
     if request.method == 'POST':
         if 'stock_to_stock' in request.POST:
@@ -153,7 +153,7 @@ def statistics_view(request, ticker):
         stock_id = request.POST.get('stock_id')
         if stock_id:
             secondstock = get_object_or_404(TrackedStock, id=stock_id)
-            print(secondstock.ticker)
+            second_company_name = secondstock.company_name
             stock_to_stock = get_betas(ticker, secondstock.ticker)
             stock_to_stock = f"{stock_to_stock:.4f}"
 
@@ -165,7 +165,7 @@ def statistics_view(request, ticker):
         'stock_data': stockList,
         'beta_value': beta,
         'stock_to_stock': stock_to_stock,
-        'second_comp': secondstock.company_name,
+        'second_comp': second_company_name,
         'volatility': volatility,
     })
 
