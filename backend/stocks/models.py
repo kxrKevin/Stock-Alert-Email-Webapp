@@ -1,7 +1,8 @@
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
-import alpaca_trade_api as tradeapi
+from alpaca.data.historical import StockHistoricalDataClient
+from alpaca.data.requests import StockLatestTradeRequest
 
 # Create your models here.
 class TrackedStock(models.Model):
@@ -27,20 +28,14 @@ class TrackedStock(models.Model):
     def __str__(self):
         return f"{self.ticker} - {self.company_name}"
 
-    def _get_alpaca_api(self):
-        return tradeapi.REST(
-            key_id=settings.ALPACA_API_KEY,
-            secret_key=settings.ALPACA_SECRET_KEY,
-            base_url=settings.ALPACA_BASE_URL
-        )
-    
     def get_current_price(self):
         # fetch live price from Alpaca API
         try:
-            api = self._get_alpaca_api()
+            client = StockHistoricalDataClient(settings.ALPACA_API_KEY, settings.ALPACA_SECRET_KEY)
+            request_params = StockLatestTradeRequest(symbol_or_symbols=self.ticker)
             # get latest trade for this ticker
-            latest_trade = api.get_latest_trade(self.ticker)
-            return float(latest_trade.price)
+            latest_trade = client.get_stock_latest_trade(request_params)
+            return float(latest_trade[self.ticker].price)
 
         except Exception as e:
             print(f"Error fetching price for {self.ticker}: {e}")

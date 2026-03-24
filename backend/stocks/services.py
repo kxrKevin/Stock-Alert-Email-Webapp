@@ -1,4 +1,7 @@
-import alpaca_trade_api as tradeapi
+from alpaca.data.historical import StockHistoricalDataClient
+from alpaca.data.requests import StockLatestTradeRequest
+from alpaca.trading.client import TradingClient
+
 from django.conf import settings
 from django.utils import timezone
 import yfinance as yf
@@ -6,19 +9,27 @@ import pandas as pd
 
 def search_stock(ticker):
     try:
-        api = tradeapi.REST(
-            key_id=settings.ALPACA_API_KEY,
-            secret_key=settings.ALPACA_SECRET_KEY,
-            base_url=settings.ALPACA_BASE_URL
-        )
-        asset = api.get_asset(ticker)
-        latest_trade = api.get_latest_trade(ticker)
-        return{
-            'ticker': asset.symbol,
-            'company_name': asset.name,
-            'current_price': latest_trade.price,
-        }
+        
+        client = StockHistoricalDataClient(settings.ALPACA_API_KEY, settings.ALPACA_SECRET_KEY)
+
+        trading_client = TradingClient(settings.ALPACA_API_KEY, settings.ALPACA_SECRET_KEY)    
+
+        request_params = StockLatestTradeRequest(symbol_or_symbols=ticker)
+        # get latest trade for this ticker
+
+        print("HERE3")
+        
+        latest_trade = client.get_stock_latest_trade(request_params)
+        asset = trading_client.get_asset(ticker)
+
         print(ticker + "found")
+
+        return{
+            'ticker': ticker,
+            'company_name': asset.name,
+            'current_price': latest_trade[ticker].price,
+        }
+        
 
     except Exception as e:
         print(f"Error fetching stock data: {e}")
