@@ -4,7 +4,6 @@ from stocks.views import portfolio_view, statistics_view
 from stocks.models import TrackedStock
 from unittest.mock import patch
 
-
 class Test_Portfolio_View(TestCase):
 
     def setUp(self):

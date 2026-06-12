@@ -3,17 +3,19 @@
 <html>
 
 <a href="{%url 'portfolio' %}">RETURN TO PORTFOLIO</a>    
-<title>{{ ticker }}</title>
+<title>{{ ticker }} STATS</title>
 
 <style>
 
 table {
     border-collapse: solid;
-    border: 1px solid black; 
+    border: 1px solid black;
+    background-color: white; 
+    margin: 10px;
 }
 
 td, th, tr {
-    padding: 3px 20px;
+    padding: 6px 20px;
     border: 1px solid black; 
 }
 
@@ -22,21 +24,29 @@ td, th, tr {
 <div >
     <center>
 
-    <h1>{{ ticker }}</h1>
+    <h1>{{ company }}</h1>
     <table class="statistics">
         <tr>
-            <td>CURRENT PRICE</td>
+            <td>QUANTITY</td>
             <td>
-                {{ current_price}}
+                {{ quantity }}
             </td>
         </tr>
         <tr>
-            <td>MARKET BETA(S&P500) </td>
+            <td>CURRENT PRICE (USD)</td>
+            <td>
+                ${{ current_price}}
+            </td>
+        </tr>
+    </table>
+    <table class="statistics">
+        <tr>
+            <td>MARKET β (S&P500) </td>
             <td>{{ beta_value }}</td>
         </tr>
         <tr>
             <td>
-                <p>STOCK-STOCK BETA</p>
+                <p>STOCK-STOCK CROSS BETA</p>
                 <form method="POST">
                     {% csrf_token %}
                     <select name="stock_id" onchange="this.form.submit()">
@@ -54,7 +64,7 @@ td, th, tr {
         </tr>
         <tr>
             <td>
-                DAILY VOLATILITY
+                HISTORIC VOLATILITY(3 MONTHS)
             </td>
             <td>
                 {{ volatility }}%
@@ -63,13 +73,7 @@ td, th, tr {
 
     </table>
 
-
-
-
     </center>
-</div>
-<div>
-    <center><p>STATISTICS ARE BASED ON STOCK DATA OF THE PAST 3 MONTHS</p></center>
 </div>
 
 </html>

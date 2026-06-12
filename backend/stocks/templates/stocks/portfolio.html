@@ -22,6 +22,10 @@
         font-family: Arial;
     }
 
+    table{
+        border-spacing: 5px;
+    }
+
     h1 {
         justify-content: center;
     }
@@ -36,12 +40,32 @@
 
     .container {
         display: flex;
+        padding: 20px;
+        gap: 10px;
     }
 
     .search-selection {
         flex: 1;
         padding: 10px;
-        background-color: grey;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        background-color: lightslategray;
+        font-family:Arial;
+    }
+
+    .search-title{
+        width:100%;
+    }
+
+    .search-bar{
+        display: flex;
+        width:100%;
+        justify-content: center;
+    }
+
+    .search-bar input{
+        flex: 1;
     }
 
     .portfolio-section {
@@ -62,9 +86,14 @@
 
     .search-results{
         padding: 10px;
-        margin-top: 10px;
-        background-color: yellow;
+        margin-top: 20px;
+        background-color: #e6e6e6;
         font-family:Arial;
+        gap: 10px;
+    }
+
+    .splitter{
+        background-color: black;
     }
 
     .price-higher {background-color: green;}
@@ -79,14 +108,16 @@
 <div class="container">
 
     <div class="search-selection">
-        <h2><center>SEARCH STOCKS</center></h2>
+        <h2 class="search-title"><center>SEARCH STOCKS</center></h2>
 
-        <form method="POST">
-            <center>
-            {% csrf_token %}
-            <input type="text" name="ticker" placeholder="Enter Ticker Here">
-            <button type="submit" name="search">Search</button>
-            </center>
+        <form method="POST" >
+            <div class="search-bar">
+                <center>
+                {% csrf_token %}
+                <input type="text" name="ticker" placeholder="Enter Ticker Here">
+                <button type="submit" name="search">Search</button>
+                </center>
+            </div>
         </form>
 
         {% if search_results %}
@@ -101,11 +132,14 @@
                     <input type="hidden" name="company_name" value="{{ search_results.company_name }}">
                     <input type="hidden" name="current_price" value="{{ search_results.current_price }}">
                     
+                    <label>Quantity:</label>
+                    <input type="number" name="quantity" step="1" min="0" required>
+                    <br>
                     <label>Upper Limit:</label>
-                    <input type="number" name="upper_limit" step="0.01" required>
+                    <input type="number" name="upper_limit" step="0.01" min="0" required>
                     <br>
                     <label>Lower Limit:</label>
-                    <input type="number" name="lower_limit" step="0.01" required>
+                    <input type="number" name="lower_limit" step="0.01" min="0" required>
                     <br>
                     <label>Alert</label>
                     <input type="radio" name="alertstatus" value="on"> 
@@ -124,6 +158,9 @@
                 <td class="portfolio-variables">Ticker</td>
                 <td class="portfolio-variables">Company</td>
                 <td class="portfolio-variables">Current</td>
+                <td class="portfolio-variables">Quantity</td>
+                <td class="portfolio-variables">Total Inv</td>
+
                 <td class="portfolio-variables">Upper</td>
                 <td class="portfolio-variables">Lower</td>
                 <td class="portfolio-variables">Alert</td>
@@ -142,6 +179,8 @@
                 <td class="{% if item.current_price > item.upperLimit %}price-higher{% elif item.current_price < item.lowerLimit %}price-lower{% else %}price-neutral{% endif %}">
                     ${{ item.current_price }}
                 </td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.total }}</td>
                 <td>${{ item.upperLimit }}</td>
                 <td>${{ item.lowerLimit }}</td>
                 <td>

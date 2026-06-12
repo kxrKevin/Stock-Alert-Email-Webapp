@@ -16,8 +16,6 @@ def search_stock(ticker):
 
         request_params = StockLatestTradeRequest(symbol_or_symbols=ticker)
         # get latest trade for this ticker
-
-        print("HERE3")
         
         latest_trade = client.get_stock_latest_trade(request_params)
         asset = trading_client.get_asset(ticker)
@@ -51,7 +49,10 @@ def get_betas(ticker1, ticker2):
     covariance = merged[['stock_ret', 'spy_ret']].cov().iloc[0,1]
     variance = merged['spy_ret'].var()
 
-    beta = covariance / variance
+    if (ticker1 == 'SPY' and ticker2 == '^GSPC') or ticker1 == ticker2:
+        beta = 1
+    else:    
+        beta = covariance / variance
 
     print(data)
     print(spy)
@@ -69,4 +70,7 @@ def get_volatility(ticker):
     volatility = data['Returns'].std()
 
     return f"{volatility:.4f}"
+
+
+# TO DO: 
 

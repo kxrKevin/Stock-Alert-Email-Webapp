@@ -31,7 +31,7 @@ def portfolio_view(request):
         elif 'add_stock' in request.POST:
             ticker = request.POST.get('ticker')
             companyName = request.POST.get('company_name')
-            currentPrice = request.POST.get('current_price')
+            quantity = request.POST.get('quantity')
             uLimit = request.POST.get('upper_limit')
             lLimit = request.POST.get('lower_limit')
 
@@ -44,6 +44,7 @@ def portfolio_view(request):
             TrackedStock.objects.create(
                 ticker = ticker,
                 company_name = companyName,
+                quantity = quantity,
                 upperLimit = uLimit,
                 lowerLimit = lLimit,
                 alertEnabled = alerton
@@ -93,11 +94,15 @@ def portfolio_view(request):
             stock.marketClosed = False
             stock.save()
 
+        total = current_price * stock.quantity
+
         stock_data.append({
             'stock': stock,
             'ticker': stock.ticker,
             'company_name': stock.company_name,
+            'quantity': stock.quantity,
             'current_price': current_price,
+            'total': total,
             'upperLimit': stock.upperLimit,
             'lowerLimit': stock.lowerLimit,
             'alertEnabled': stock.alertEnabled
@@ -135,10 +140,15 @@ def portfolio_view(request):
 def statistics_view(request, ticker):
     ticker = ticker
     curr_price = 0
+    quantity = 0
+    s_company_name = ""
     stockList = TrackedStock.objects.all()
     for stock in stockList:
         if stock.ticker == ticker:
             curr_price = stock.get_current_price()
+            quantity = stock.quantity
+            s_company_name = stock.company_name
+            break
     beta = get_betas(ticker, '^GSPC')
     beta = f"{beta:.4f}"
 
@@ -161,7 +171,9 @@ def statistics_view(request, ticker):
 
     return render(request, 'stocks/statistics.html', {
         'ticker': ticker,
+        'company': s_company_name,
         'current_price': curr_price,
+        'quantity': quantity,
         'stock_data': stockList,
         'beta_value': beta,
         'stock_to_stock': stock_to_stock,

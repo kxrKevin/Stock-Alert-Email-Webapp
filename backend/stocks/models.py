@@ -10,6 +10,8 @@ class TrackedStock(models.Model):
     ticker = models.CharField(max_length=4)
     company_name = models.CharField(max_length=200)
 
+    quantity = models.IntegerField(default=1)
+
     # Alert Logic
     upperLimit = models.DecimalField(max_digits = 10, decimal_places=2)
     lowerLimit = models.DecimalField(max_digits = 10, decimal_places=2)
@@ -83,7 +85,5 @@ class TrackedStock(models.Model):
             }
 
         return None
-
-    
 
     
